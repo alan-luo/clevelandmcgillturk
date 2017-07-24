@@ -1,0 +1,79 @@
+<div id="consent">
+
+<h2>Alan's Test Page</h2>
+
+<p>
+This is a test Turk page implenting the position-angle experiment by Cleveland and McGill.
+</p>
+
+<div id="consentForm">
+
+<h3>Form of Consent</h3>
+<p>
+You are invited to participate in a study conducted by the Visual Analytics Lab at Tufts University. Please read the following carefully before deciding to participate. You may participate in this study if you are between the ages of 18 and 65 and are comfortable with communicating in English. We expect the entire study to take about 30 minutes maximum, but you will be allotted 60 minutes to complete the study. Your participation in the study is completely voluntary. If you choose to participate in this study you are free to revoke your consent and terminate the study at any time without penalties. 
+</p>
+
+<p>
+There are no direct benefits or foreseeable risks to you for participating in this study. However, if you decide to take part, you will play an integral role in the development of future visualizations. Any information collected for this study will be entirely confidential. The questionnaires that you would be required to complete will only be identifiable by an assigned ID number, and will not be associated with your name or any personally identifiable information. 
+</p>
+
+
+
+<h3>Purpose of Study</h3>
+<p>
+Practice setting up a Turk study.
+</p>
+
+<h3>Task Description</h3>
+<p>
+You will be taken through an experiment in which you will be asked to judge values on some graphs. Afterwards, you will be asked to complete a demographic questionnaire.  
+</p>
+
+<p>
+You will be paid a base price of $0.00 and an additional bit of satisfaction for every correct response. 
+</p>
+
+
+<h3>Contact</h3>
+<p>
+You can contact Alan Luo at <a href="mailto:aluo18@choate.edu">aluo18@choate.edu</a> or <u>(203) 998-8194</u>.
+</p>
+
+
+</div>
+
+<p>
+I have read and understand the information above, and have decided to participate in this study. 
+<button id="consentYes" type="button">I Agree</button>
+</p>
+
+<p>
+<strong>Note: this HIT requires a modern browser. If you are not using Chrome or Firefox, the "I Agree" button may not activate even after entering your Worker Id.</strong>
+</p>
+
+</div>
+
+<style>
+  #invalidMessage {
+    display: none;
+    color: red;
+  }
+  #consentForm {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 200px;
+    overflow-y: scroll;
+    padding: 15px;
+  }
+</style>
+
+<script>
+(function() {
+  init(); 
+  function init() {
+      experimentr.hideNext(); 
+      $('#consentYes').on('click', experimentr.next); 
+
+  }
+}());
+</script>

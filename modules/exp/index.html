@@ -1,0 +1,435 @@
+
+	
+<style type="text/css">
+	.container {
+		width:100%;
+		margin: 0 auto;
+		position:relative;
+	}
+	.chartcontainer {
+		width:100%;
+		position:relative;
+	}
+	.chartcontainer .chartholder {
+		margin:0 auto;
+		display:block;
+		position:relative;
+		width:50%;
+		height:400px;
+	}
+	.chartholder .inputter {
+		position:absolute;
+		width:4em;
+		font-size:12pt;
+		height:1em;
+	}
+	.inputter input {
+		width:2em;
+		font-size:12pt;
+		border:1px solid #d4d4d4;
+	}
+	.inputter span	{
+		margin-left:0.3em;
+	}
+	.chartholder svg {
+		top:0;
+		left:0;
+	}
+	.hidden {
+		display:none;
+	}
+	.form {
+		width:50%;
+		margin:0 auto;
+		text-align:center;
+	}
+</style>
+<div id="exp">
+
+<div class="container">
+
+<div class="chartcontainer">
+
+	<div class="chartholder" id="pieholder">
+		<!-- <svg id="pie"></svg> -->
+	</div>
+
+	<div class="form">
+		<button id="nextgraph">Next Graph</button>
+		<p>
+		Graph: <span id="number">1</span>/20
+		</p>
+	</div>
+	
+</div>
+
+</div>
+
+<script type="text/javascript">
+
+var subjectData= [];
+var startTime = Date.now();
+
+var PIE_TYPE = 0;
+var BAR_TYPE = 1;
+
+var data = 
+// [
+// [5.450496432612728, 8.36693912614819, 18.395390025458934, 28.902083460454797, 38.88509095532535],
+// [5.883271766320086, 14.148865331821092, 19.2231006988681, 25.295373082723067, 35.449389120267654],
+// [6.320697831509636, 9.234397116909786, 13.948172198902252, 32.64774604239619, 37.84898681028213],
+// [8.988053497240855, 14.687044899649603, 17.56926471551559, 21.704957328687996, 37.050679558905955],
+// [7.6922498624542035, 10.564623665771133, 15.707719117097074, 31.807089102412604, 34.228318252264984],
+// [7.220476933659237, 12.992398320021858, 16.33717593133117, 25.749653438947817, 37.70029537603992],
+// [3.0146474428782044, 5.3622478503189575, 26.369374880735027, 29.939839110621662, 35.31389071544615],
+// [3.9592051369844894, 16.074657401120017, 19.06047940508231, 23.800286214193008, 37.10537184262017],
+// [8.385255187666974, 11.069086556096774, 22.431782227136708, 28.190533559796705, 29.92334246930284],
+// [13.056973948231644, 14.265612865203114, 14.474146984586131, 20.18058311518871, 38.0226830867904]
+// ];
+[
+[18.395390025458934, 8.36693912614819, 5.450496432612728, 28.902083460454797, 38.88509095532535],
+[14.148865331821092, 19.2231006988681, 25.295373082723067, 5.883271766320086, 35.449389120267654],
+[13.948172198902252, 6.320697831509636, 9.234397116909786, 37.84898681028213, 32.64774604239619],
+[37.050679558905955, 14.687044899649603, 21.704957328687996, 17.56926471551559, 8.988053497240855],
+[15.707719117097074, 31.807089102412604, 34.228318252264984, 10.564623665771133, 7.6922498624542035],
+[16.33717593133117, 7.220476933659237, 12.992398320021858, 37.70029537603992, 25.749653438947817],
+[35.31389071544615, 5.3622478503189575, 26.369374880735027, 3.0146474428782044, 29.939839110621662],
+[37.10537184262017, 16.074657401120017, 19.06047940508231, 3.9592051369844894, 23.800286214193008],
+[8.385255187666974, 22.431782227136708, 11.069086556096774, 28.190533559796705, 29.92334246930284],
+[14.474146984586131, 13.056973948231644, 38.0226830867904, 14.265612865203114, 20.18058311518871]
+];
+
+var graphOrder = [[3, 0], [7, 0], [8, 0], [8, 1], [4, 1], [2, 0], [6, 1], [5, 1], [4, 0], [0, 1], [5, 0], [0, 0], [2, 1], [6, 0], [9, 0], [1, 1], [1, 0], [9, 1], [3, 1], [7, 1]];
+
+var graphNumber = 0;
+
+function letter(number) {
+	return String.fromCharCode(65+number);
+}
+
+var largestIndex = -1;
+
+myColor =  '#6294e5';
+myColor2 = "red";
+
+function makeGraph() {
+	var currentGraph = graphOrder[graphNumber];
+
+
+	if(currentGraph[1]==PIE_TYPE) {
+		$('.chartholder').append('<svg id="pie"></svg>');	
+	} else {
+		$('.chartholder').append('<svg id="bar"></svg>');
+	}
+	
+
+	var dataset = data[currentGraph[0]];
+
+	var largestValue = -100;
+
+	largestIndex = -1;
+	for(var i=0; i<dataset.length ;i++) {
+		if(dataset[i]>largestValue)  {
+			largestIndex = i;
+			largestValue = dataset[i];
+		}
+	}
+
+	if(currentGraph[1]==PIE_TYPE) {
+		var piewidth = 350;
+		var pieheight = 350;
+		var pieoffset = 50;
+		var radius = Math.min(piewidth-pieoffset, pieheight-pieoffset) / 2;
+		var svg = d3.select('#pie')
+		  .attr('width', piewidth+pieoffset)
+		  .attr('height', pieheight+pieoffset)
+		  .append('g')
+		  .attr('transform', 'translate(' + (piewidth / 2) +
+		    ',' + ((pieheight / 2)+15) + ')');
+
+		var arc = d3.arc()
+		  .innerRadius(0)
+		  .outerRadius(radius);
+
+		var textarc = d3.arc()
+		  .innerRadius(radius)
+		  .outerRadius(radius+40);
+
+		var dotarc = d3.arc()
+		  .innerRadius(0)
+		  .outerRadius(radius+60);
+
+
+		var pie = d3.pie()
+		  .value(function(d) { return d })
+		  .sort(null);
+		// var pie = d3.layout.pie();
+
+		var arcs = svg.selectAll('g.arc')
+			.data(pie(dataset))
+			.enter()
+			.append('g')
+			.attr('class','arc');
+
+		arcs.append("path")
+			.attr('fill', function(d) {
+				if(d.index==largestIndex) {
+					return d3.color(myColor2);
+				}
+			return d3.color(myColor);
+			})	
+			.attr('d', arc)
+			.style('stroke', 'white')
+			.style('stroke-width', 2);
+
+		arcs.append("text")
+		    .attr("transform", function (d) {
+			    return "translate(" + textarc.centroid(d)+ ")";
+			})
+		    .attr("text-anchor", "middle")
+		    .text(function (d,i) {
+			    return letter(i);
+			})
+			.attr("text-anchor", "middle") //center the text on it's origin
+			.attr('class',function (d) {
+				if(d.index==largestIndex) return 'noinput';
+				else return 'hasinput';
+			})
+			.style("fill", "black")
+			.style("font", "14pt sans-serif");
+
+		arcs.append("text")
+			.attr("transform", function (d) {
+			    return "translate(" + dotarc.centroid(d)+ ")";
+			})
+			.text(function (d, i){
+				// return Math.round(d.value)+"%";
+				return " ";
+			})
+			.attr("text-anchor", "middle")
+			.style("fill", function (d,i) {
+				if(i == largestIndex) {
+					return "white";
+				} else return "rgba(0, 0, 0, 0)";
+			})
+			.style("font", "14pt sans-serif")
+			.attr('id', function (d, i) {
+				return "anchor"+letter(i);
+			});
+			// .style("fill","rgba(0, 0, 0, 0)");
+	} else {
+
+		var margin = {top: 5, right: 5, bottom: 70, left: 5};
+		// here, we want the full chart to be 700x200, so we determine
+		// the width and height by subtracting the margins from those values
+		var fullWidth = 350;
+		var fullHeight = 330;
+		// the width and height values will be used in the ranges of our scales
+		var width = fullWidth - margin.right - margin.left;
+		var height = fullHeight - margin.top - margin.bottom;
+		var svg2 = d3.select('#bar')
+			.attr('width', fullWidth)
+			.attr('height',fullHeight)
+			.append('g')
+		    // translate it to leave room for the left and top margins
+		    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+
+		var labelScale = d3.scaleBand()
+		  .domain([0, 1, 2, 3, 4])
+		  .range([0, width])
+		  // allow for some padding between bars
+		  .paddingInner(0.1);
+
+
+		var valueScale = d3.scaleLinear()
+		  .domain([0, d3.max(dataset, function(d) { return d; })])
+		  .range([height, 0])
+		  // use nice to round the domain values to nice numbers
+		  .nice();
+
+		var bandwidth = labelScale.bandwidth();
+
+		var barHolder = svg2.append('g')
+		  .classed('bar-holder', true);
+
+		// draw the bars
+		var bars = barHolder.selectAll('g.bar')
+		    .data(dataset)
+		    .enter()
+		    .append('g')
+		    .attr('class','bar');
+
+		bars.append('rect')
+		    .classed('bar', true)
+		    .attr('x', function(d, i) {
+		      // the x value is determined using the
+		      // month of the datum
+		      return labelScale(i);
+		    })
+		    .attr('width', bandwidth)
+		    .attr('y', function(d) {
+		      // the y position is determined by the datum's temp
+		      // this value is the top edge of the rectangle
+		      return valueScale(d);
+		    })
+		    .attr('height', function(d) {
+		      // the bar's height should align it with the base of the chart (y=0)
+		      return height - valueScale(d);
+		    })
+		    .attr('fill', function(d, i) {
+		    	if(i == largestIndex) return d3.color(myColor2);
+				return d3.color(myColor);
+			});
+
+		bars.append('text')
+			.attr("transform", function (d, i) {
+			    return "translate(" + [labelScale(i)+bandwidth/2,fullHeight-margin.bottom+24]+ ")";
+			})
+		    .attr("text-anchor", "middle")
+		    .text(function (d,i) {
+			    return letter(i);
+			})
+			.attr('class',function (d, i) {
+				if(i==largestIndex) return 'noinput';
+				else return 'hasinput';
+			})
+			.attr("text-anchor", "middle") //center the text on it's origin
+			.attr("id", function (d, i) {
+				return "bar"+letter(i);
+			})
+			.style("fill", "black")
+			.style("font", "14pt sans-serif");
+
+		bars.append('text')
+			.text(function (d, i) {
+				// return Math.round(d)+"%";
+				return " ";
+			})
+			.attr("transform", function (d, i) {
+				return "translate(" + [labelScale(i)+bandwidth/2,fullHeight-margin.bottom+55]+ ")";
+			})
+			.attr('text-anchor', "middle");
+
+	}
+
+
+	$('svg text.hasinput').each(function() {
+		var transformx, transformy, appender;
+		
+		var lettername = $(this).html();
+
+		if($(this).parent().parent().parent().attr("id")=="pie") {
+			var transformtext = $("#anchor"+lettername).attr('transform');
+
+			// var transformtext = $(this).attr("transform");
+			var transformsplit = transformtext.split(",");
+			transformx = parseInt(transformsplit[0].split("translate(")[1]);
+			transformy = parseInt(transformsplit[1].split(")")[0]);
+
+			transformx = transformx + piewidth/2 -18;
+			transformy = transformy + piewidth/2;
+			appender = "#pieholder";
+
+		} else {
+
+			var transformtext = $(this).attr("transform");
+			var transformsplit = transformtext.split(",");
+			transformx = parseInt(transformsplit[0].split("translate(")[1])-10;
+			transformy = parseInt(transformsplit[1].split(")")[0])+20;
+
+			appender = "#barholder";
+		}
+
+		appender = '.chartholder';
+
+		$('<div class="inputter"><input type="text" /><span>%</span></div>').appendTo(appender)
+		.css('left',transformx)
+		.css('top', transformy)
+		.children("input")
+		.attr('id', lettername)
+		.attr('name', lettername);
+	});
+
+	$('input[type="text"]').keyup(function() {
+		$(this).val($(this).val().replace(/[^0-9]/g, ''));
+	})
+
+	$('input[type="text"]').val("XX").css('color','#d3d3d3').focusin(function() {
+		$(this).css('color','black').val($(this).val().replace(/[^0-9]/g, ''));
+	});
+
+	$("div#exp")
+	.append('<input type="text" id="'+letter(largestIndex)+'" value="-1" class="hidden"/>')
+}
+
+function removeGraph() {
+	$("svg, .hidden, .inputter").remove();
+}
+
+makeGraph();
+
+function checkJudgments() {
+
+	for(var i=0; i<5; i++) {
+		if(i!=largestIndex) {
+			var inputvalue = parseInt($("#"+letter(i)).val());
+			if(inputvalue <= 0 || inputvalue > 100 || isNaN(inputvalue)) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+$("#nextgraph").click(function() {
+	if(checkJudgments()
+		|| true //for testing
+		) {
+		newdata = {
+			graphNum: graphNumber,
+			graph: graphOrder[graphNumber],
+			millisecondsSinceStart: Date.now()-startTime,
+			judgments:[-2, -2, -2, -2, -2]
+		};
+		for(var i=0; i<5; i++) {
+			newdata.judgments[i] = $("input#"+letter(i)).val();
+		}
+		subjectData.push(newdata);
+
+		if(graphNumber==19) {
+			finish();
+		} else {
+			graphNumber++;
+			removeGraph();
+			makeGraph();
+			$("#number").html(graphNumber+1);
+
+			if(graphNumber+1==20) { //if it's the last graph
+				//remove the next button and put a submit
+				$(this).html("Finish");
+			}
+		}
+
+	}
+});
+
+</script>
+
+<!-- experimentr script -->
+<script type="text/javascript">
+(function() { //???
+    init(); 
+    function init() {
+	    experimentr.hideNext(); 
+	    d3.select('#start').on('click', experimentr.next); 
+    }
+}())
+
+function finish() {
+	experimentr.addData(subjectData);
+	console.log(subjectData);
+	experimentr.next();
+}
+</script>
+</div>

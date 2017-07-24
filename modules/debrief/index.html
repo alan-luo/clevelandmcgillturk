@@ -1,0 +1,52 @@
+<div id="debrief">
+
+<p>
+<strong>Please copy and paste the following code back on Mechanical Turk before closing this window:</strong>
+</p>
+<h2 id="postId"></h2>
+
+<p class="placeholder">
+The goal of this study is to practice putting together a turk study. The result of this study will help in the improvement of future visualization designs. 
+</p>
+
+<p>
+Thank you again for your participation. Please add a comment below with any additional thoughts you have about this experiment. After commenting, you can click submit to complete the experiment.
+</p>
+
+<textarea name="textarea" rows="10" cols="50">Leave feedback here</textarea>
+<br>
+<button id="submitComments" type="button">Submit</button>
+<br>
+<div id="submitFeedback"></div>
+
+</div>
+
+<style>
+</style>
+
+<script>
+
+experimentr.clearNext();
+var postId  = experimentr.postId;
+d3.select("#postId").text(postId);
+
+
+
+var comments = {};
+
+$("#submitComments").click(function() {
+  if(validateComments()) {
+    experimentr.addData(comments);
+
+    $.post( "./save_values.php", { postid: postId, data: JSON.stringify(experimentr.data()) })
+    .done(function( data ) {
+      alert( "Data Loaded: " + data );
+    });
+  }
+});
+
+function validateComments() {
+  comments = {comment: $('textarea').val()};
+  return true;
+}
+</script>

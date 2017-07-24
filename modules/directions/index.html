@@ -1,0 +1,34 @@
+<div id="directions">
+
+<h2>Instructions / Training Page</h2>
+
+<p>
+<strong>Instructions</strong><br>
+In the experiment, you will be given a series of graphs. They will be either pie charts or bar charts, always with five portions. For each graph, the largest portion will be indicated in red. The other four portions of the chart will have blank text boxes. Your task will be to estimate, from 1-100%, what portion of the largest chunk each of the smaller chunks is.
+</p>
+
+<div id="images">
+
+</div>
+
+<p style="clear:both;">
+After you have read the above instructions, click Start to begin the experiment. 
+<button id="start" type="button">Start</button>
+</p>
+</div>
+
+<style>
+	#images {
+	        
+	}
+</style>
+
+<script>
+// (function() {
+    init(); 
+    function init() {
+	    experimentr.hideNext(); 
+	    d3.select('#start').on('click', experimentr.next); 
+    }
+// }())
+</script>
