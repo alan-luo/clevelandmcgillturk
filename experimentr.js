@@ -151,11 +151,12 @@ var experimentr = (function() {
       console.log("new url: "+url);
     }
 
-    d3.html(url, function(err, d) {
-      if(err) {console.log(err);}
-      $('#module').load();
-      // d3.select('#module').node().appendChild(d);
-    });
+    $('#module').load(url);
+    // d3.html(url, function(err, d) {
+    //   if(err) {console.log(err);}
+      
+    //   // d3.select('#module').node().appendChild(d);
+    // });
   }
 
   // Remove the next button entirely (TODO ensure this is actually used).
